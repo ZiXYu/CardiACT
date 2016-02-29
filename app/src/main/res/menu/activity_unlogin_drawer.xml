@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Login" />
+        <item
+            android:id="@+id/nav_register"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Register" />
+    </group>
+
+    <item android:title="Info">
+        <menu>
+            <item
+                android:id="@+id/nav_trainingCentre"
+                android:icon="@drawable/ic_menu_share"
+                android:title="CPR/AED Training Centres" />
+            <item
+                android:id="@+id/nav_FAQ"
+                android:icon="@drawable/ic_menu_send"
+                android:title="FAQ" />
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Contact" />
+        </menu>
+    </item>
+
+</menu>
