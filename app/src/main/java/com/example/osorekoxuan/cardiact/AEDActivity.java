@@ -57,8 +57,6 @@ public class AEDActivity extends Activity {
                 Intent intent = new Intent(AEDActivity.this, DirectionActivity.class);
                 Bundle b = new Bundle();
                 Helper.isPathDrawn = false;
-                Helper.latitude = latitude;
-                Helper.longitude = longitude;
                 b.putDouble("longitude", latitude); //Your id
                 b.putDouble("latitude", longitude); //Your id
                 intent.putExtras(b); //Put your id to your next Intent

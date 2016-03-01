@@ -354,6 +354,9 @@ public class MainActivity extends AppCompatActivity
     private void doMapQuery() {
         // 1
         Location myLoc = (mCurrentLocation == null) ? mLastLocation : mCurrentLocation;
+        Helper.latitude = myLoc.getLatitude();
+        Helper.longitude = myLoc.getLongitude();
+
         Log.d("My Lat", Double.toString(myLoc.getLatitude()));
         Log.d("My Long", Double.toString(myLoc.getLongitude()));
         // 2

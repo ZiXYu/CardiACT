@@ -30,10 +30,10 @@ public class GMapV2Direction {
 
     public Document getDocument(LatLng start, LatLng end, String mode) {
        try{
-           Log.d("My Lat", Double.toString(start.latitude));
-           Log.d("My Long", Double.toString(start.longitude));
-           Log.d("Des Lat", Double.toString(end.latitude));
-           Log.d("Des Long", Double.toString(end.longitude));
+//           Log.d("My Lat", Double.toString(start.latitude));
+//           Log.d("My Long", Double.toString(start.longitude));
+//           Log.d("Des Lat", Double.toString(end.latitude));
+//           Log.d("Des Long", Double.toString(end.longitude));
             URL url = new URL("http://maps.googleapis.com/maps/api/directions/xml?"
                 + "origin=" + start.latitude + "," + start.longitude
                 + "&destination=" + end.latitude + "," + end.longitude

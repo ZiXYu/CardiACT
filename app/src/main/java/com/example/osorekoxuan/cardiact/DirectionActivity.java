@@ -48,8 +48,10 @@ public class DirectionActivity extends FragmentActivity implements OnMapReadyCal
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
+                Log.d("LocationListener: ", "Location Changed");
                 mylat = location.getLatitude();
                 mylng = location.getLongitude();
+                myLatLng = new LatLng(mylat, mylng);
             }
         }
 
@@ -85,11 +87,16 @@ public class DirectionActivity extends FragmentActivity implements OnMapReadyCal
     public void getPosition() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         gpsProvider = LocationManager.GPS_PROVIDER;
+
+        locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
         if (locationManager.isProviderEnabled(gpsProvider)) {
             Location location = locationManager.getLastKnownLocation(gpsProvider);
             if (location != null) {
-                mylat = location.getLatitude();
-                mylng = location.getLongitude();
+                //TODO: fix lat, lng
+                //mylat = location.getLatitude();
+                //mylng = location.getLongitude();
+                mylat = Helper.latitude;
+                mylng = Helper.longitude;
                 myLatLng = new LatLng(mylat, mylng);
             }
         } else {
