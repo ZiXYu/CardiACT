@@ -2,11 +2,16 @@ package com.example.osorekoxuan.cardiact;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -32,6 +37,9 @@ public class AEDActivity extends Activity {
      * to reflect its new value.
      */
     private TextView aedAddress, aedLocation, aedNumber, aedZip;
+    private double latitude, longitude;
+    final String DEBUGTAG = "AED Activity:";
+    public BootstrapButton pathFindingBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +50,22 @@ public class AEDActivity extends Activity {
         aedLocation = (TextView) findViewById(R.id.aed_location);
         aedNumber = (TextView) findViewById(R.id.aed_nubmer);
         aedZip = (TextView) findViewById(R.id.aed_zip);
-
+        pathFindingBtn = (BootstrapButton) findViewById(R.id.path_finding);
+        pathFindingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AEDActivity.this, DirectionActivity.class);
+                Bundle b = new Bundle();
+                Helper.isPathDrawn = false;
+                b.putDouble("longitude", latitude); //Your id
+                b.putDouble("latitude", longitude); //Your id
+                intent.putExtras(b); //Put your id to your next Intent
+                startActivity(intent);
+            }
+        });
         Bundle b = getIntent().getExtras();
-        double latitude = b.getDouble("latitude");
-        double longitude = b.getDouble("longitude");
+        latitude = b.getDouble("latitude");
+        longitude = b.getDouble("longitude");
         Log.d("AED Lat", Double.toString(latitude));
         Log.d("AED Long", Double.toString(longitude));
         ParseGeoPoint geoPoint = new ParseGeoPoint(latitude, longitude);
@@ -68,5 +88,10 @@ public class AEDActivity extends Activity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed(){
+         super.onBackPressed();
     }
 }

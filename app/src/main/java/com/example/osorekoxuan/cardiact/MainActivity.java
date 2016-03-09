@@ -4,7 +4,10 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.TypefaceProvider;
 import com.google.android.gms.common.ConnectionResult;
@@ -114,6 +118,9 @@ public class MainActivity extends AppCompatActivity
     private ParseQueryAdapter<AED> aedParseQueryAdapter;
     ParseRole role;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +156,13 @@ public class MainActivity extends AppCompatActivity
 
         checkLoginStatus();
     }
-
+//    @Override
+//    public void onResume(){
+//        if(Helper.isPathDrawn == false);{
+//            Toast.makeText(getApplicationContext(),"Drawing path", Toast.LENGTH_SHORT).show();
+//            Helper.isPathDrawn = true;
+//        }
+//    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -183,6 +196,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -263,7 +277,12 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+//            if(Helper.isPathDrawn == false){
+//                Toast.makeText(getApplicationContext(),"Drawing path", Toast.LENGTH_SHORT).show();
+//                Helper.isPathDrawn = true;
+//        }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -287,9 +306,7 @@ public class MainActivity extends AppCompatActivity
                 doMapQuery();
             }
         });
-
         mMap.setOnMarkerClickListener(this);
-
     }
 
     @Override
@@ -337,6 +354,9 @@ public class MainActivity extends AppCompatActivity
     private void doMapQuery() {
         // 1
         Location myLoc = (mCurrentLocation == null) ? mLastLocation : mCurrentLocation;
+        Helper.latitude = myLoc.getLatitude();
+        Helper.longitude = myLoc.getLongitude();
+
         Log.d("My Lat", Double.toString(myLoc.getLatitude()));
         Log.d("My Long", Double.toString(myLoc.getLongitude()));
         // 2
@@ -345,7 +365,7 @@ public class MainActivity extends AppCompatActivity
         ParseQuery<ParseObject> mapQuery = ParseQuery.getQuery("AED_DATA");;
         // 4
         mapQuery.orderByDescending("createdAt");
-        mapQuery.setLimit(30);
+        mapQuery.setLimit(500);
 
         // 6
         mapQuery.findInBackground(new FindCallback<ParseObject>() {
