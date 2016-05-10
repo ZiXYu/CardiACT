@@ -43,6 +43,11 @@
         <item>Etobicokes</item>
         <item>Scarborough</item>
     </string-array>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_profile_view">Personal Information</string>
+    <string name="title_activity_profile_manage">ProfileManageActivity</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

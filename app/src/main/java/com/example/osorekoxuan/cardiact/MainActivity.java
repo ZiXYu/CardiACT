@@ -4,12 +4,17 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,6 +41,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -43,6 +50,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
@@ -55,7 +63,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMarkerClickListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnInfoWindowClickListener {
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -95,10 +103,10 @@ public class MainActivity extends AppCompatActivity
     private static final float OFFSET_CALCULATION_ACCURACY = 0.01f;
 
     // Maximum results returned from a Parse query
-    private static final int MAX_POST_SEARCH_RESULTS = 100;
+    private static final int MAX_POST_SEARCH_RESULTS = 20;
 
     // Maximum post search radius for map in kilometers
-    private static final int MAX_POST_SEARCH_DISTANCE = 100;
+    private static final int MAX_POST_SEARCH_DISTANCE = 1;
 
     // Fields for the map radius in feet
     private float radius;
@@ -119,12 +127,14 @@ public class MainActivity extends AppCompatActivity
     ParseRole role;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("Roles", "Bystander");
+        installation.saveInBackground();
 
         radius = Application.getSearchDistance();
         lastRadius = radius;
@@ -137,6 +147,15 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                startActivity(getIntent());
+            }
+        });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -203,7 +222,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_login) {
+        if(id == R.id.nav_home){
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            finish();
+            startActivity(intent);
+        } else if (id == R.id.nav_login) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_register) {
@@ -222,9 +245,14 @@ public class MainActivity extends AppCompatActivity
                     .setNegativeButton("Cancel", null);
             builder.show();
         } else if (id == R.id.nav_profile){
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            Intent intent = new Intent(MainActivity.this, ProfileViewActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_map){
+        } else if (id == R.id.nav_ins){
+            Intent intent = new Intent(MainActivity.this, InstructionActivity.class);
+            startActivity(intent);
+        }  else if (id == R.id.nav_contact){
+            Intent intent = new Intent(MainActivity.this, ContactActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -237,7 +265,7 @@ public class MainActivity extends AppCompatActivity
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             // do stuff with the user
-            String name = currentUser.getString("name");
+            String name = currentUser.getString("firstname") + " " + currentUser.getString("lastname");
             String email = currentUser.getEmail();
 
             if(name != null) {
@@ -306,7 +334,7 @@ public class MainActivity extends AppCompatActivity
                 doMapQuery();
             }
         });
-        mMap.setOnMarkerClickListener(this);
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
@@ -317,14 +345,14 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
             if (mLastLocation != null) {
                 lat = mLastLocation.getLatitude();
                 lon = mLastLocation.getLongitude();
                 LatLng latLng = new LatLng(lat, lon);
                 CameraUpdate center= CameraUpdateFactory.newLatLng(latLng);
-                CameraUpdate zoom= CameraUpdateFactory.zoomTo(16);
+                CameraUpdate zoom= CameraUpdateFactory.zoomTo(14);
                 mMap.moveCamera(center);
                 mMap.animateCamera(zoom);
             }
@@ -353,20 +381,22 @@ public class MainActivity extends AppCompatActivity
 
     private void doMapQuery() {
         // 1
-        Location myLoc = (mCurrentLocation == null) ? mLastLocation : mCurrentLocation;
-        Helper.latitude = myLoc.getLatitude();
-        Helper.longitude = myLoc.getLongitude();
+        Location myLoc = new Location("My Location");
+         myLoc = (mCurrentLocation == null) ? mLastLocation : mCurrentLocation;
 
-        Log.d("My Lat", Double.toString(myLoc.getLatitude()));
-        Log.d("My Long", Double.toString(myLoc.getLongitude()));
+        if(myLoc == null){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Sorry, your location information could not be accessed!")
+                    .setNegativeButton("Cancel", null);
+            builder.show();
+            return;
+        }
         // 2
-        final ParseGeoPoint myPoint = geoPointFromLocation(myLoc);
+        final ParseGeoPoint myPoint = new ParseGeoPoint(myLoc.getLatitude(), myLoc.getLongitude());
         // 3
-        ParseQuery<ParseObject> mapQuery = ParseQuery.getQuery("AED_DATA");;
+        ParseQuery<ParseObject> mapQuery = ParseQuery.getQuery("AED_DATA");
         // 4
-        mapQuery.orderByDescending("createdAt");
-        mapQuery.setLimit(500);
-
+        mapQuery.whereWithinKilometers("LOCATION", myPoint, 1);
         // 6
         mapQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -375,25 +405,91 @@ public class MainActivity extends AppCompatActivity
                 for (ParseObject post : objects) {
                     double lat = post.getParseGeoPoint("LOCATION").getLatitude();
                     double lng = post.getParseGeoPoint("LOCATION").getLongitude();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(lng, lat)).title(post.getString("ADD_FULL")));
+
+                    Drawable circle;
+                    if(post.getInt("REPORTED") == 1){
+                        circle = getResources().getDrawable(R.drawable.ic_marker_yellow);
+                    }else {
+                        circle = getResources().getDrawable(R.drawable.ic_marker_green);
+                    }
+                    Canvas canvas = new Canvas();
+                    Bitmap bitmap = Bitmap.createBitmap(circle.getIntrinsicWidth(), circle.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                    canvas.setBitmap(bitmap);
+                    circle.setBounds(0, 0, circle.getIntrinsicWidth(), circle.getIntrinsicHeight());
+                    circle.draw(canvas);
+                    BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+
+                    double distance = myPoint.distanceInKilometersTo(post.getParseGeoPoint("LOCATION"));
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(lat, lng))
+                            .title("AED")
+                            .snippet(post.getString("ADD_FULL"))
+                            .icon(bd));
                 }
+
+            }
+        });
+
+        ParseQuery<ParseObject> eventQuery = ParseQuery.getQuery("Emergency");
+        // 4
+        eventQuery.whereWithinKilometers("Location", myPoint, 1);
+
+        // 6
+        eventQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                // Handle the results
+                for (ParseObject post : objects) {
+                    double lat = post.getParseGeoPoint("Location").getLatitude();
+                    double lng = post.getParseGeoPoint("Location").getLongitude();
+
+                    Drawable circle;
+                    if(!"Finished".equals(post.getString("Status"))) {
+                        circle = getResources().getDrawable(R.drawable.ic_marker_red);
+                    }else{
+                        circle = getResources().getDrawable(R.drawable.ic_marker_grey);
+                    }
+                    Canvas canvas = new Canvas();
+                    Bitmap bitmap = Bitmap.createBitmap(circle.getIntrinsicWidth(), circle.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                    canvas.setBitmap(bitmap);
+                    circle.setBounds(0, 0, circle.getIntrinsicWidth(), circle.getIntrinsicHeight());
+                    circle.draw(canvas);
+                    BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(lat, lng))
+                            .title("Emergency Event")
+                            .snippet(post.getString("Name"))
+                            .icon(bd));
+                }
+
             }
         });
     }
 
     @Override
-    public boolean onMarkerClick(final Marker marker) {
+    public void onInfoWindowClick(final Marker marker) {
 
         double latitude = marker.getPosition().latitude;
         double longitude = marker.getPosition().longitude;
-        Intent intent = new Intent(MainActivity.this, AEDActivity.class);
-        Bundle b = new Bundle();
-        b.putDouble("longitude", latitude); //Your id
-        b.putDouble("latitude", longitude); //Your id
-        intent.putExtras(b); //Put your id to your next Intent
-        startActivity(intent);
+        Intent intent;
+        if("AED".equals(marker.getTitle())){
+            intent = new Intent(MainActivity.this, AEDActivity.class);
+            Bundle b = new Bundle();
+            b.putDouble("latitude", latitude); //Your id
+            b.putDouble("longitude", longitude); //Your id
+            intent.putExtras(b); //Put your id to your next Intent
+            startActivity(intent);
+        }else{
+            intent = new Intent(MainActivity.this, EventDetailActivity.class);
+            Bundle b = new Bundle();
+            b.putDouble("latitude", latitude); //Your id
+            b.putDouble("longitude", longitude); //Your id
+            intent.putExtras(b); //Put your id to your next Intent
+            startActivity(intent);
+        }
         Log.d("My Map Click", "Click Lisener Successfully");
-
-        return false;
     }
 }

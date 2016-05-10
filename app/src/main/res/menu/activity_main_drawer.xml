@@ -4,6 +4,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_24dp"
+            android:title="Home Page"/>
+        <item
             android:id="@+id/nav_login"
             android:icon="@drawable/ic_vpn_key"
             android:title="Login"/>
@@ -26,13 +30,13 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_manage"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Tools" />
+                android:id="@+id/nav_ins"
+                android:icon="@drawable/ic_assignment_24dp"
+                android:title="CPR Instruction" />
             <item
-                android:id="@+id/nav_map"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Tools" />
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_assignment_late_24dp"
+                android:title="Contact Info" />
         </menu>
     </item>
 

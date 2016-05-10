@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -10,6 +11,45 @@
         android:layout_weight="1"
         tools:context=".DirectionActivity"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/event_finish"
+            android:text="Finished"
+            android:gravity="center"
+            style="@style/direction_button"
+            app:bootstrapBrand="info"
+            app:roundedCorners="true"
+            app:bootstrapSize="lg"
+            />
+
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/get_aed"
+            android:text="Got AED"
+            android:gravity="center"
+            style="@style/direction_button"
+            app:bootstrapBrand="success"
+            app:roundedCorners="true"
+            app:bootstrapSize="lg"
+            />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/get_event"
+            android:text="Arrived"
+            android:gravity="center"
+            style="@style/direction_button"
+            app:bootstrapBrand="success"
+            app:roundedCorners="true"
+            app:bootstrapSize="lg"
+            />
+
+    </LinearLayout>
 
 
 </LinearLayout>

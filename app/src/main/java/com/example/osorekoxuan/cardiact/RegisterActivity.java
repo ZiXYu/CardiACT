@@ -58,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      */
     // UI references.
     private AutoCompleteTextView mEmailView;
-    private EditText mUsernameView, mPasswordView, mPasswordVerifyView;
+    private EditText mfirstnameView, mlastnameView, mPasswordView, mPasswordVerifyView;
     private View mProgressView;
     private View mRegisterFormView;
 
@@ -70,7 +70,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-        mUsernameView = (EditText) findViewById(R.id.username);
+        mfirstnameView = (EditText) findViewById(R.id.first_name);
+        mlastnameView = (EditText) findViewById(R.id.last_name);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordVerifyView = (EditText) findViewById(R.id.passwordVerify);
 
@@ -138,19 +139,17 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      * errors are presented and no actual login attempt is made.
      */
     private void attemptRegister() {
-        /*if (mAuthTask != null) {
-            return;
-        }*/
-
         // Reset errors.
         mEmailView.setError(null);
-        mUsernameView.setError(null);
+        mfirstnameView.setError(null);
+        mlastnameView.setError(null);
         mPasswordView.setError(null);
         mPasswordVerifyView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
-        String username = mUsernameView.getText().toString();
+        String firstname = mfirstnameView.getText().toString();
+        String lastname = mlastnameView.getText().toString();
         String password = mPasswordView.getText().toString();
         String passwordVerify = mPasswordVerifyView.getText().toString();
 
@@ -158,9 +157,15 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         View focusView = null;
 
         // Check for a valid username, if the user entered one.
-        if (!TextUtils.isEmpty(username) && !isUsernameValid(username)) {
-            mUsernameView.setError(getString(R.string.error_invalid_password));
-            focusView = mUsernameView;
+        if (TextUtils.isEmpty(firstname)) {
+            mfirstnameView.setError(getString(R.string.error_field_required));
+            focusView = mfirstnameView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(lastname) ) {
+            mlastnameView.setError(getString(R.string.error_field_required));
+            focusView = mlastnameView;
             cancel = true;
         }
 
@@ -197,7 +202,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            UserRegisterTask(email, username, password);
+            UserRegisterTask(email, firstname, lastname, password);
             //mAuthTask = new UserRegisterTask(email, username, password);
             //mAuthTask.execute((Void) null);
         }
@@ -210,17 +215,12 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 5;
+        return password.length() > 2;
     }
 
     private boolean isPasswordVerified(String password, String passwordVerify) {
         //TODO: Replace this with your own logic
-        return passwordVerify.length() > 5 && (password.equals(passwordVerify));
-    }
-
-    private boolean isUsernameValid(String username) {
-        //TODO: Replace this with your own logic
-        return username.length() > 4;
+        return passwordVerify.length() > 2 && (password.equals(passwordVerify));
     }
 
     /**
@@ -313,13 +313,15 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         int IS_PRIMARY = 1;
     }
 
-    public void UserRegisterTask(String email, String username ,String password){
+    public void UserRegisterTask(String email, String firstname, String lastname ,String password){
         ParseUser user = new ParseUser();
         user.setEmail(email);
         user.setUsername(email);
         user.setPassword(password);
 
-        user.put("name", username);
+        user.put("firstname", firstname);
+        user.put("lastname", lastname);
+        user.put("Roles", "Bystander");
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {

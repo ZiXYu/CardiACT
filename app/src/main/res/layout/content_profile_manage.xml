@@ -1,17 +1,24 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.osorekoxuan.cardiact.ProfileActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.osorekoxuan.cardiact.ProfileManageActivity"
+    tools:showIn="@layout/app_bar_profile_manage">
 
-    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/profile_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/profile_form"
@@ -19,7 +26,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/email_register_form"
+            android:id="@+id/email_profile_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -88,6 +95,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <AutoCompleteTextView
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_email"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <EditText
                     android:id="@+id/home_address"
                     android:layout_width="match_parent"
@@ -105,63 +127,21 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Registered in CPR: "
-                    android:textStyle="bold"
+                    android:textStyle="normal"
                     android:textSize="16dp"/>
                 <CheckBox
+                    android:id="@+id/cpr_register"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="false"
                     />
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Available Location: "
-                    android:textStyle="bold"
-                    android:textSize="16dp"/>
-                <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/spinner"
-                    android:entries="@array/areas"
-                    android:layout_gravity="center_horizontal"
-                    android:textStyle="bold"
-                    android:textSize="16dp"/>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available Time From"
-                android:textStyle="bold"
-                android:textSize="16dp"/>
-            <TimePicker
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:id="@+id/timePicker"
-                android:timePickerMode="spinner"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available Time To"
-                android:textStyle="bold"
-                android:textSize="16dp"/>
-            <TimePicker
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:id="@+id/timePicker2"
-                android:timePickerMode="spinner" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -195,7 +175,4 @@
         </LinearLayout>
     </ScrollView>
 
-
-
-
-</LinearLayout>
+</RelativeLayout>

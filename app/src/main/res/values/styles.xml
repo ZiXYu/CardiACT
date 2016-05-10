@@ -50,7 +50,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="android:textSize" tools:ignore="SpUsage">50dp</item>
+        <item name="android:textSize" tools:ignore="SpUsage">14dp</item>
     </style>
 
     <style name="progress_weight_container">
@@ -87,12 +87,27 @@
         <item name="android:layout_marginRight">@dimen/micro_padding</item>
     </style>
 
+    <style name="direction_button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">50</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="info_lines">
         <item name="android:layout_marginLeft">@dimen/default_padding</item>
     </style>
 
     <style name="info_rows">
         <item name="android:layout_marginTop">@dimen/default_padding</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
     </style>
 
 </resources>
